@@ -95,13 +95,13 @@ cd unlock
 
 2️⃣ **Install Dependencies**
 
-# Frontend:
+## Frontend:
 ```bash
 cd UnlockFrontend
 npm install
 ```
 
-# Backend:
+## Backend:
 ```bash
 cd backend
 npm install
