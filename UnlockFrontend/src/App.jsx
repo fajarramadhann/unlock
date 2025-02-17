@@ -5,6 +5,7 @@ import LandingPage from "./components/LandingPage";
 import Dashboard from "./components/Dashboard";
 import MyAccount from "./components/MyAccount";
 import MyPurchase from "./components/MyPurchase";
+import CreateContent from "./components/CreateContent";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/my-account" element={<MyAccount />} />
           <Route path="/my-purchase" element={<MyPurchase />} />
+          <Route path="/create-content" element={<CreateContent />} />
         </Route>
       </Routes>
     </BrowserRouter>

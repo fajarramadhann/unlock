@@ -63,7 +63,7 @@ export default function Dashboard() {
     <>
       {/* Search Bar & Category */}
       <section className="mb-6 p-2">
-        <Button className="flex items-center gap-2 w-full px-4 py-2 bg-white border-2 border-black rounded-full">
+        <div className="flex items-center gap-2 w-full px-4 py-2 bg-white border-2 border-black rounded-full border-border font-base shadow-light">
           <Search className="text-gray-500" size={20} />
           <input
             type="text"
@@ -72,7 +72,7 @@ export default function Dashboard() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full outline-none bg-transparent"
           />
-        </Button>
+        </div>
 
         {/* Categories */}
         <div className="flex gap-3 mt-4">

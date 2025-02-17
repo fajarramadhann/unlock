@@ -26,7 +26,6 @@ function LandingPage() {
             showBalance={false}
             chainStatus="none"
             accountStatus="address"
-            className="custom-connect-button"
           />
         )}
       </nav>
@@ -39,11 +38,13 @@ function LandingPage() {
         <p className="text-xl text-gray-600 mb-8">
           Unlock premium content & courses using blockchain.
         </p>
-        <Button className="flex justify-center"
-          onClick={() => navigate('/dashboard')}
-        >
-          Get Started
-        </Button>
+        <div className='flex items-center justify-center'>
+          <Button className="flex justify-center"
+            onClick={() => navigate('/dashboard')}
+          >
+            Get Started
+         </Button>
+        </div>
       </section>
     </div>
   );

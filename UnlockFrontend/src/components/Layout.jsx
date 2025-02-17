@@ -32,16 +32,6 @@ export default function Layout() {
               Explore
             </Button>
           </Link>
-          <Link to="/my-account">
-            <Button
-              className={`w-full p-3 border-2 ${
-                activeMenu === "My Account" ? "text-black" : "bg-white"
-              }`}
-              onClick={() => setActiveMenu("My Account")}
-            >
-              My Account
-            </Button>
-          </Link>
           <Link to="/my-purchase">
             <Button
               className={`w-full p-3 border-2 ${
@@ -50,6 +40,26 @@ export default function Layout() {
               onClick={() => setActiveMenu("My Purchase")}
             >
               My Purchase
+            </Button>
+          </Link>
+          <Link to="/create-content">
+            <Button
+              className={`w-full p-3 border-2 ${
+                activeMenu === "Create Content" ? "text-black" : "bg-white"
+              }`}
+              onClick={() => setActiveMenu("Create Content")}
+            >
+              Create Content
+            </Button>
+          </Link>
+          <Link to="/my-account">
+            <Button
+              className={`w-full p-3 border-2 ${
+                activeMenu === "My Account" ? "text-black" : "bg-white"
+              }`}
+              onClick={() => setActiveMenu("My Account")}
+            >
+              My Account
             </Button>
           </Link>
         </nav>
