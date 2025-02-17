@@ -4,6 +4,13 @@ Unlock is a next-generation Web3 monetization platform designed to help content 
 
 ---
 
+https://unlockthree.vercel.app
+
+## Contract Address ( Still on Manta Pasific Sepolia Testnet )
+Unlock: `0xC1E58E91ABE26e9653FB75335d32259879b8c746`
+
+Content Registry: `0x220F7C53563B32CE31d0DEC5910da56bc04CeA8D`
+
 ## 📜 Table of Contents
 
 - [Overview](#overview)
