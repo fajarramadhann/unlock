@@ -41,23 +41,85 @@ export default function CreateContent() {
     setIsDrawerOpen(true);
   };
 
-  const handleSubmit = () => {
-    const newContent = {
-      id: Date.now(),
-      imageUrl: URL.createObjectURL(thumbnail),
-      title,
-      description,
-      price: isPaid ? `${price} ETH` : "Free",
-      creator: address,
-    };
+  const handleSubmit = async () => {
+    if (!address) {
+      alert("Please connect your wallet to upload content.");
+      return;
+    }
   
-    // Store in localStorage or a global state
-    const storedContents = JSON.parse(localStorage.getItem("uploadedContents")) || [];
-    localStorage.setItem("uploadedContents", JSON.stringify([...storedContents, newContent]));
-    
-    setIsDrawerOpen(false);
-    navigate("/dashboard");
+    if (!thumbnail || !title.trim() || !description.trim() || !category.trim()) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+  
+    setIsUploading(true);
+  
+    try {
+      // Upload thumbnail to IPFS
+      const formData = new FormData();
+      formData.append("file", thumbnail);
+      const uploadResponse = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer YOUR_PINATA_JWT`, // Replace with actual API Key
+        },
+        body: formData,
+      });
+  
+      const uploadData = await uploadResponse.json();
+      const thumbnailUrl = `ipfs://${uploadData.IpfsHash}`;
+  
+      // Generate content ID
+      const contentId = Date.now().toString();
+  
+      // Save content to backend (Supabase)
+      const response = await fetch("http://localhost:3000/api/contents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          description,
+          category,
+          price: isPaid ? price : "0",
+          creator_address: address,
+          content_id: contentId,
+          preview_image: thumbnailUrl,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to create content");
+      }
+  
+      // Generate metadata for NFT/SBT
+      const metadataResponse = await fetch("http://localhost:3000/api/sbt/metadata", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tokenId: contentId, // Use content ID as token ID
+          contentId: contentId,
+          ownerAddress: address,
+          name: title,
+          description,
+          image: thumbnailUrl,
+        }),
+      });
+  
+      if (!metadataResponse.ok) {
+        throw new Error("Failed to generate metadata");
+      }
+  
+      alert("Content uploaded successfully!");
+      navigate("/dashboard");
+  
+    } catch (error) {
+      console.error("Error uploading content:", error);
+      alert("Failed to upload content.");
+    } finally {
+      setIsUploading(false);
+    }
   };
+  
 
   return (
     <div className="p-8">
