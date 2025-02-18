@@ -1,4 +1,4 @@
-import { Toaster } from "react-hot-toast"; // Import Toaster
+import { Toaster } from "react-hot-toast";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
@@ -7,6 +7,7 @@ import Dashboard from "./components/Dashboard";
 import MyAccount from "./components/MyAccount";
 import MyPurchase from "./components/MyPurchase";
 import CreateContent from "./components/CreateContent";
+import ContentPage from "./components/ContentPage";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/my-account" element={<MyAccount />} />
           <Route path="/my-purchase" element={<MyPurchase />} />
           <Route path="/create-content" element={<CreateContent />} />
+          <Route path="/content/:id" element={<ContentPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

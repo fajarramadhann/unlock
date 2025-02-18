@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import Button from './ui/Button';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { ConnectButton, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import { useNavigate, Link } from 'react-router-dom';
 
 function LandingPage() {

@@ -1,17 +1,7 @@
 import { useState } from "react";
 import Button from "./ui/Button";
 import { Input } from "./ui/Input";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from './ui/AlertButton';
+import { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter } from "./ui/Drawer";
 import { Textarea } from "./ui/Textarea";
 import { useAccount } from "wagmi";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +17,7 @@ export default function CreateContent() {
   const [description, setDescription] = useState("");
   const [isPaid, setIsPaid] = useState(false);
   const [price, setPrice] = useState("");
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const handleThumbnailChange = (file) => {
     setThumbnail(file);
@@ -36,31 +27,41 @@ export default function CreateContent() {
     setContentFile(e.target.files[0]);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleUploadClick = () => {
     if (!address) {
       alert("Please connect your wallet to upload content.");
       return;
     }
 
-    if (!thumbnail || !contentFile || !title || !description || (isPaid && (price === "" || parseFloat(price) <= 0))) {
-      alert("Please fill in all required fields and ensure the price is greater than 0.");
+    if (!thumbnail || !title.trim() || !description.trim() || (isPaid && (!price || isNaN(price) || parseFloat(price) < 0.0005))) {
+      alert("Please fill in all required fields and ensure the price is at least 0.0005 ETH.");
       return;
     }
 
-    console.log("Thumbnail:", thumbnail);
-    console.log("Content File:", contentFile);
-    console.log("Title:", title);
-    console.log("Description:", description);
-    console.log("Price:", isPaid ? `${price} ETH` : "Free");
+    setIsDrawerOpen(true);
+  };
 
+  const handleSubmit = () => {
+    const newContent = {
+      id: Date.now(),
+      imageUrl: URL.createObjectURL(thumbnail),
+      title,
+      description,
+      price: isPaid ? `${price} ETH` : "Free",
+      creator: address,
+    };
+  
+    // Store in localStorage or a global state
+    const storedContents = JSON.parse(localStorage.getItem("uploadedContents")) || [];
+    localStorage.setItem("uploadedContents", JSON.stringify([...storedContents, newContent]));
+    
+    setIsDrawerOpen(false);
     navigate("/dashboard");
   };
 
   return (
     <div className="p-8">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Left Side: Title, Description, and Content File */}
           <div className="space-y-4">
@@ -108,46 +109,63 @@ export default function CreateContent() {
                 <input
                   type="checkbox"
                   checked={isPaid}
-                  onChange={() => setIsPaid(!isPaid)}
+                  onChange={() => {
+                    setIsPaid(!isPaid);
+                    if (!isPaid) setPrice(""); // Reset price if unchecked
+                  }}
                   className="border-2 border-black rounded"
                 />
                 <span className="text-sm font-base text-gray-500">Make this content paid</span>
               </div>
-              {isPaid && (
-                <input
-                  type="number"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  placeholder="Price in ETH"
-                  className="w-full border-2 border-black rounded-lg p-2 bg-white shadow-light mt-2"
-                  min="0.01"
-                />
+              {isPaid ? (
+                <>
+                  <input
+                    type="number"
+                    value={price}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setPrice(val);
+                    }}
+                    placeholder="Price in ETH"
+                    className="w-full border-2 border-black rounded-lg p-2 bg-white shadow-light mt-2"
+                    min="0.0005"
+                    step="0.0001"
+                  />
+                  <p className="text-sm text-gray-600 mt-1">Price: {price ? `${price} ETH` : "Not set"}</p>
+                </>
+              ) : (
+                <p className="text-sm text-gray-600 mt-1">Free</p>
               )}
             </div>
 
             <div className="flex justify-end">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button disabled={!thumbnail || !contentFile || !title || !description || (isPaid && (price === "" || parseFloat(price) <= 0))}>Upload Content</Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Do you want to mint your content? </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Your content can be minted as an NFT. If you choose not to mint it now, you can mint it later or not at all.
-                      You can still upload your content without minting it.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>No</AlertDialogCancel>
-                    <AlertDialogAction>Yes</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+              <Button 
+                onClick={handleUploadClick}
+                disabled={!thumbnail || !title.trim() || !description.trim() || (isPaid && (!price || isNaN(price) || parseFloat(price) < 0.0005))}
+              >
+                Upload Content
+              </Button>
             </div>
           </div>
         </div>
       </form>
+
+      {/* Drawer for Minting Confirmation */}
+      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Do you want to mint your content?</DrawerTitle>
+            <DrawerDescription>
+              Your content can be minted as an NFT. If you choose not to mint it now, you can mint it later or not at all.
+              You can still upload your content without minting it.
+            </DrawerDescription>
+          </DrawerHeader>
+          <DrawerFooter>
+            <Button onClick={handleSubmit}>Yes</Button>
+            <Button onClick={(handleSubmit)}>No</Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }
