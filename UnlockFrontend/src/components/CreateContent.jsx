@@ -1,8 +1,21 @@
-// CreateContent.jsx
-import { useState } from 'react';
-import Button from './ui/Button';
-import { useAccount } from 'wagmi';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import Button from "./ui/Button";
+import { Input } from "./ui/Input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './ui/AlertButton';
+import { Textarea } from "./ui/Textarea";
+import { useAccount } from "wagmi";
+import { useNavigate } from "react-router-dom";
+import ThumbnailUploader from "./ui/ThumbnailUploader";
 
 export default function CreateContent() {
   const { address } = useAccount();
@@ -10,13 +23,13 @@ export default function CreateContent() {
 
   const [thumbnail, setThumbnail] = useState(null);
   const [contentFile, setContentFile] = useState(null);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [isPaid, setIsPaid] = useState(false);
-  const [price, setPrice] = useState('0.0');
+  const [price, setPrice] = useState("");
 
-  const handleThumbnailChange = (e) => {
-    setThumbnail(e.target.files[0]);
+  const handleThumbnailChange = (file) => {
+    setThumbnail(file);
   };
 
   const handleContentFileChange = (e) => {
@@ -27,90 +40,112 @@ export default function CreateContent() {
     e.preventDefault();
 
     if (!address) {
-      alert('Please connect your wallet to upload content.');
+      alert("Please connect your wallet to upload content.");
       return;
     }
 
-    if (!thumbnail || !contentFile || !title || !description) {
-      alert('Please fill in all required fields.');
+    if (!thumbnail || !contentFile || !title || !description || (isPaid && (price === "" || parseFloat(price) <= 0))) {
+      alert("Please fill in all required fields and ensure the price is greater than 0.");
       return;
     }
 
-    // Here you would typically upload the files to a server or IPFS
-    // and save the metadata to your backend or blockchain.
-    // For now, we'll just log the data.
+    console.log("Thumbnail:", thumbnail);
+    console.log("Content File:", contentFile);
+    console.log("Title:", title);
+    console.log("Description:", description);
+    console.log("Price:", isPaid ? `${price} ETH` : "Free");
 
-    console.log('Thumbnail:', thumbnail);
-    console.log('Content File:', contentFile);
-    console.log('Title:', title);
-    console.log('Description:', description);
-    console.log('Price:', isPaid ? `${price} ETH` : 'Free');
-
-    // Redirect to dashboard or another page after successful upload
-    navigate('/dashboard');
+    navigate("/dashboard");
   };
 
   return (
     <div className="p-8">
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Thumbnail</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleThumbnailChange}
-            className="mt-1 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Content File</label>
-          <input
-            type="file"
-            onChange={handleContentFileChange}
-            className="mt-1 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="mt-1 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Description</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="mt-1 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Price</label>
-          <div className="mt-1">
-            <input
-              type="checkbox"
-              checked={isPaid}
-              onChange={() => setIsPaid(!isPaid)}
-              className="mr-2"
-            />
-            <span className="text-sm text-gray-500">Make this content paid</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Left Side: Title, Description, and Content File */}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+              <Input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full rounded-lg p-2 bg-white shadow-light"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full rounded-lg p-2 bg-white shadow-light"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Content File</label>
+              <div className="border-2 border-black rounded-lg p-4 bg-white shadow-light">
+                <input
+                  type="file"
+                  onChange={handleContentFileChange}
+                  className="w-full font-base"
+                />
+              </div>
+            </div>
           </div>
-          {isPaid && (
-            <input
-              type="number"
-              step="0.01"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="Price in ETH"
-              className="mt-1 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          )}
-        </div>
-        <div className='flex items-center justify-center'>
-          <Button type="submit">Upload Content</Button>
+
+          {/* Right Side: Thumbnail, Price, and Upload Content Button */}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Thumbnail</label>
+              <ThumbnailUploader onThumbnailChange={handleThumbnailChange} />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Price</label>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={isPaid}
+                  onChange={() => setIsPaid(!isPaid)}
+                  className="border-2 border-black rounded"
+                />
+                <span className="text-sm font-base text-gray-500">Make this content paid</span>
+              </div>
+              {isPaid && (
+                <input
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  placeholder="Price in ETH"
+                  className="w-full border-2 border-black rounded-lg p-2 bg-white shadow-light mt-2"
+                  min="0.01"
+                />
+              )}
+            </div>
+
+            <div className="flex justify-end">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button disabled={!thumbnail || !contentFile || !title || !description || (isPaid && (price === "" || parseFloat(price) <= 0))}>Upload Content</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Do you want to mint your content? </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Your content can be minted as an NFT. If you choose not to mint it now, you can mint it later or not at all.
+                      You can still upload your content without minting it.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>No</AlertDialogCancel>
+                    <AlertDialogAction>Yes</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </div>
         </div>
       </form>
     </div>

@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast"; // Import Toaster
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
@@ -10,6 +11,9 @@ import CreateContent from "./components/CreateContent";
 function App() {
   return (
     <BrowserRouter>
+      {/* Tambahkan Toaster di sini */}
+      <Toaster position="top-right" />
+
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route element={<Layout />}>

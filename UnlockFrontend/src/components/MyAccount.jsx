@@ -1,7 +1,5 @@
-// MyAccount.jsx
 import { useState, useEffect } from 'react';
 import { useAccount, useBalance } from 'wagmi';
-import Button from './ui/Button';
 
 export default function MyAccount() {
   const { address, isConnected } = useAccount();

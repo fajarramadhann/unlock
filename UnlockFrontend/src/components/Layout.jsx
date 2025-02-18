@@ -3,13 +3,14 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Button from "./ui/Button";
+import { LayoutDashboard, ShoppingBag, PlusCircle, User } from "lucide-react"; // Import Lucide icons
 
 export default function Layout() {
   const [activeMenu, setActiveMenu] = useState("Explore");
   const { isConnected } = useAccount();
   const navigate = useNavigate();
 
-  // Redirect ke LandingPage jika wallet disconnect
+  // Redirect to LandingPage if wallet is disconnected
   useEffect(() => {
     if (!isConnected) {
       navigate("/");
@@ -24,42 +25,42 @@ export default function Layout() {
         <nav className="flex flex-col gap-4">
           <Link to="/dashboard">
             <Button
-              className={`w-full p-3 border-2 ${
+              className={`w-full p-3 border-2 flex items-center gap-2 ${
                 activeMenu === "Explore" ? "text-black" : "bg-white"
               }`}
               onClick={() => setActiveMenu("Explore")}
             >
-              Explore
+              <LayoutDashboard size={20} /> Explore
             </Button>
           </Link>
           <Link to="/my-purchase">
             <Button
-              className={`w-full p-3 border-2 ${
+              className={`w-full p-3 border-2 flex items-center gap-2 ${
                 activeMenu === "My Purchase" ? "text-black" : "bg-white"
               }`}
               onClick={() => setActiveMenu("My Purchase")}
             >
-              My Purchase
+              <ShoppingBag size={20} /> My Purchase
             </Button>
           </Link>
           <Link to="/create-content">
             <Button
-              className={`w-full p-3 border-2 ${
+              className={`w-full p-3 border-2 flex items-center gap-2 ${
                 activeMenu === "Create Content" ? "text-black" : "bg-white"
               }`}
               onClick={() => setActiveMenu("Create Content")}
             >
-              Create Content
+              <PlusCircle size={20} /> Create Content
             </Button>
           </Link>
           <Link to="/my-account">
             <Button
-              className={`w-full p-3 border-2 ${
+              className={`w-full p-3 border-2 flex items-center gap-2 ${
                 activeMenu === "My Account" ? "text-black" : "bg-white"
               }`}
               onClick={() => setActiveMenu("My Account")}
             >
-              My Account
+              <User size={20} /> My Account
             </Button>
           </Link>
         </nav>
