@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import Button from './ui/Button';
-import { ConnectButton, connectorsForWallets } from '@rainbow-me/rainbowkit';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useNavigate, Link } from 'react-router-dom';
 
 function LandingPage() {
@@ -33,17 +33,31 @@ function LandingPage() {
       {/* Hero Section */}
       <section className="text-center mt-16">
         <h1 className="text-6xl font-bold mb-4">
-          Join Exclusive <span className="text-[#ffffff]">Web3</span> Communities
+          Tokenize your <span>Content</span>
         </h1>
         <p className="text-xl text-gray-600 mb-8">
-          Unlock premium content & courses using blockchain.
+          Unlock premium content using blockchain.
         </p>
-        <div className='flex items-center justify-center'>
-          <Button className="flex justify-center"
-            onClick={() => navigate('/dashboard')}
-          >
-            Get Started
-         </Button>
+        <div className="flex items-center justify-center">
+          {!isConnected ? (
+            <ConnectButton.Custom>
+              {({ openConnectModal }) => (
+                <Button
+                  className="flex justify-center"
+                  onClick={openConnectModal}
+                >
+                  Get Started
+                </Button>
+              )}
+            </ConnectButton.Custom>
+          ) : (
+            <Button
+              className="flex justify-center"
+              onClick={() => navigate('/dashboard')}
+            >
+              Go to Dashboard
+            </Button>
+          )}
         </div>
       </section>
     </div>
